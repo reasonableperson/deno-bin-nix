@@ -28,15 +28,11 @@ fi
 
 echo "syncing Deno version ${current_version} -> ${latest_version}"
 
-x64_hash="$(asset_hash deno-x86_64-unknown-linux-gnu.zip)"
-linux_arm64_hash="$(asset_hash deno-aarch64-unknown-linux-gnu.zip)"
-darwin_arm64_hash="$(asset_hash deno-aarch64-apple-darwin.zip)"
-
 jq \
   --arg version "$latest_version" \
-  --arg x64_hash "$x64_hash" \
-  --arg linux_arm64_hash "$linux_arm64_hash" \
-  --arg darwin_arm64_hash "$darwin_arm64_hash" \
+  --arg x64_hash "$(asset_hash deno-x86_64-unknown-linux-gnu.zip)" \
+  --arg linux_arm64_hash "$(asset_hash deno-aarch64-unknown-linux-gnu.zip)" \
+  --arg darwin_arm64_hash "$(asset_hash deno-aarch64-apple-darwin.zip)" \
   '.version = $version
   | .assets["x86_64-linux"].hash = $x64_hash
   | .assets["aarch64-linux"].hash = $linux_arm64_hash
