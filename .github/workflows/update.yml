@@ -15,10 +15,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
 
-      - name: Install Nix
-        uses: cachix/install-nix-action@v31
-
-      - name: Update pinned Deno release and commit changes
+      - name: Update release and commit changes
         run: |
           set -euo pipefail
 
