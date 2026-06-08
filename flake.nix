@@ -21,24 +21,26 @@
     {
       packages = forAllSystems (builtins.attrNames metadata.assets) (
         system: with import nixpkgs { inherit system; }; {
-          default = stdenvNoCC.mkDerivation {
-            pname = "deno";
-            version = metadata.version;
-            src = fetchzip {
-              url = "https://github.com/denoland/deno/releases/download/v${metadata.version}/${metadata.assets.${system}.name}";
-              hash = metadata.assets.${system}.hash;
+          default =
+            with metadata;
+            stdenvNoCC.mkDerivation {
+              pname = "deno";
+              version = version;
+              src = fetchzip {
+                url = "https://github.com/denoland/deno/releases/download/v${version}/${assets.${system}.name}";
+                hash = assets.${system}.hash;
+              };
+              nativeBuildInputs = lib.optionals stdenv.hostPlatform.isLinux [ autoPatchelfHook ];
+              buildInputs = lib.optionals stdenv.hostPlatform.isLinux [
+                glibc
+                stdenv.cc.cc.lib
+              ];
+              installPhase = ''
+                mkdir -p $out/bin
+                cp "$src/deno" $out/bin/deno
+                chmod +x $out/bin/deno
+              '';
             };
-            nativeBuildInputs = lib.optionals stdenv.hostPlatform.isLinux [ autoPatchelfHook ];
-            buildInputs = lib.optionals stdenv.hostPlatform.isLinux [
-              glibc
-              stdenv.cc.cc.lib
-            ];
-            installPhase = ''
-              mkdir -p $out/bin
-              cp "$src/deno" $out/bin/deno
-              chmod +x $out/bin/deno
-            '';
-          };
         }
       );
     };
