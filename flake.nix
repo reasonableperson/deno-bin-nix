@@ -1,5 +1,5 @@
 {
-  description = "Pinned Deno binary flake for Linux x86_64 and aarch64";
+  description = "Pinned Deno binary flake for Linux and aarch64-darwin";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -11,6 +11,7 @@
       systems = [
         "x86_64-linux"
         "aarch64-linux"
+        "aarch64-darwin"
       ];
       forAllSystems =
         f:
@@ -26,8 +27,9 @@
           inherit system;
         };
       denoVersion = "2.8.2";
-      denoX64Hash = "sha256-GE2npSZ6tkm8CIIbO8POaAXY5phfuCcHy41en9ZTU2I=";
-      denoArm64Hash = "sha256-SGRxia7mRU7ZuYUvpwCnf5KzlGXATGJZAdFlvI6Tevw=";
+      denoX64Hash = "0mp2fj07vyac1psgzhfrfwib7vzszpjy44rcg1xl4hqsh3x2rb38";
+      denoLinuxArm64Hash = "14iwhaq3idhaidf47zxg012fgbl8s6fd97bk613zylg2a3bxggmy";
+      denoDarwinArm64Hash = "0y5d1im0wn8fxmyqif170yqrrprlv0wh0ncb562353jn2dwvj7iz";
     in
     {
       packages = forAllSystems (
@@ -38,10 +40,17 @@
             {
               x86_64-linux = "deno-x86_64-unknown-linux-gnu.zip";
               aarch64-linux = "deno-aarch64-unknown-linux-gnu.zip";
+              aarch64-darwin = "deno-aarch64-apple-darwin.zip";
             }
             .${system};
-          denoHash = if system == "aarch64-linux" then denoArm64Hash else denoX64Hash;
-          denoSrc = pkgs.fetchurl {
+          denoHash =
+            {
+              x86_64-linux = denoX64Hash;
+              aarch64-linux = denoLinuxArm64Hash;
+              aarch64-darwin = denoDarwinArm64Hash;
+            }
+            .${system};
+          denoSrc = pkgs.fetchzip {
             url = "https://github.com/denoland/deno/releases/download/v${denoVersion}/${denoAssetName}";
             hash = denoHash;
           };
@@ -49,12 +58,11 @@
             pname = "deno";
             version = denoVersion;
             src = denoSrc;
-            nativeBuildInputs = [ pkgs.autoPatchelfHook ];
-            buildInputs = [
+            nativeBuildInputs = pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [ pkgs.autoPatchelfHook ];
+            buildInputs = pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [
               pkgs.glibc
               pkgs.stdenv.cc.cc.lib
             ];
-            dontUnpack = true;
             installPhase = ''
               mkdir -p $out/bin
               cp "$src/deno" $out/bin/deno
