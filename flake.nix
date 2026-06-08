@@ -34,8 +34,8 @@
     in
     {
       packages = forAllSystems (builtins.attrNames assets) (
-        system: with import nixpkgs { inherit system; }; rec {
-          deno = stdenvNoCC.mkDerivation {
+        system: with import nixpkgs { inherit system; }; {
+          default = stdenvNoCC.mkDerivation {
             pname = "deno";
             version = denoVersion;
             src = fetchzip {
@@ -53,7 +53,6 @@
               chmod +x $out/bin/deno
             '';
           };
-          default = deno;
         }
       );
     };

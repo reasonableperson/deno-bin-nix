@@ -20,7 +20,7 @@ Then consume its package:
 ```nix
 {
   outputs = { self, nixpkgs, deno-bin, ... }: {
-    packages.x86_64-linux.default = deno-bin.packages.x86_64-linux.deno;
+    packages.x86_64-linux.default = deno-bin.packages.x86_64-linux.default;
   };
 }
 ```
