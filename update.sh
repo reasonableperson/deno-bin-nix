@@ -28,15 +28,24 @@ fi
 
 echo "syncing Deno version ${current_version} -> ${latest_version}"
 
-jq \
-  --arg version "$latest_version" \
-  --arg x64_hash "$(asset_hash deno-x86_64-unknown-linux-gnu.zip)" \
-  --arg linux_arm64_hash "$(asset_hash deno-aarch64-unknown-linux-gnu.zip)" \
-  --arg darwin_arm64_hash "$(asset_hash deno-aarch64-apple-darwin.zip)" \
-  '.version = $version
-  | .assets["x86_64-linux"].hash = $x64_hash
-  | .assets["aarch64-linux"].hash = $linux_arm64_hash
-  | .assets["aarch64-darwin"].hash = $darwin_arm64_hash' \
-  metadata.json > metadata.json.tmp
+cat > metadata.json.tmp <<EOF
+{
+  "version": "${latest_version}",
+  "assets": {
+    "x86_64-linux": {
+      "hash": "$(asset_hash deno-x86_64-unknown-linux-gnu.zip)",
+      "name": "deno-x86_64-unknown-linux-gnu.zip"
+    },
+    "aarch64-linux": {
+      "hash": "$(asset_hash deno-aarch64-unknown-linux-gnu.zip)",
+      "name": "deno-aarch64-unknown-linux-gnu.zip"
+    },
+    "aarch64-darwin": {
+      "hash": "$(asset_hash deno-aarch64-apple-darwin.zip)",
+      "name": "deno-aarch64-apple-darwin.zip"
+    }
+  }
+}
+EOF
 
 mv metadata.json.tmp metadata.json
