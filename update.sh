@@ -9,14 +9,16 @@ latest_version="${latest_tag#v}"
 current_version="$(jq -r '.version' release.json)"
 
 parse_asset() {
-  local asset_json="$(jq -c --arg name "$1" '.assets[] | select(.name == $name)' <<< "$release_json")"
-
-  cat <<EOF
-{
-      "url": "$(jq -r '.browser_download_url' <<< "$asset_json")",
-      "sha256": "$(jq -r '.digest | sub("^sha256:"; "")' <<< "$asset_json")"
-    }
-EOF
+  jq -r --arg name "$1" '
+    first(
+      .assets[]
+      | select(.name == $name)
+      | {
+          url: .browser_download_url,
+          sha256: (.digest | sub("^sha256:"; ""))
+        }
+    ) // error("missing asset: \($name)")
+  ' <<< "$release_json"
 }
 
 if [[ "$latest_version" == "$current_version" ]]; then
