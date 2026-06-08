@@ -8,7 +8,7 @@
   outputs =
     { nixpkgs, ... }:
     let
-      metadata = builtins.fromJSON (builtins.readFile ./assets.json);
+      metadata = builtins.fromJSON (builtins.readFile ./metadata.json);
       assets = metadata.assets;
       forAllSystems =
         systems: f:

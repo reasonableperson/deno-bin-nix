@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 release_json="$(curl -fsSL https://api.github.com/repos/denoland/deno/releases/latest)"
 latest_tag="$(jq -r '.tag_name' <<< "$release_json")"
 latest_version="${latest_tag#v}"
-current_version="$(jq -r '.version' assets.json)"
+current_version="$(jq -r '.version' metadata.json)"
 
 asset_hash() {
   local asset_name="$1"
@@ -37,6 +37,6 @@ jq \
   | .assets["x86_64-linux"].hash = $x64_hash
   | .assets["aarch64-linux"].hash = $linux_arm64_hash
   | .assets["aarch64-darwin"].hash = $darwin_arm64_hash' \
-  assets.json > assets.json.tmp
+  metadata.json > metadata.json.tmp
 
-mv assets.json.tmp assets.json
+mv metadata.json.tmp metadata.json
