@@ -22,9 +22,8 @@
           name = "deno-aarch64-apple-darwin.zip";
         };
       };
-      systems = builtins.attrNames assets;
       forAllSystems =
-        f:
+        systems: f:
         builtins.listToAttrs (
           map (system: {
             name = system;
@@ -39,7 +38,7 @@
       denoVersion = "2.8.2";
     in
     {
-      packages = forAllSystems (
+      packages = forAllSystems (builtins.attrNames assets) (
         system:
         let
           pkgs = mkPkgs system;
