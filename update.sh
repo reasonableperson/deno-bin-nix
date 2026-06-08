@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 release_json="$(curl -fsSL https://api.github.com/repos/denoland/deno/releases/latest)"
 latest_tag="$(jq -r '.tag_name' <<< "$release_json")"
 latest_version="${latest_tag#v}"
-current_version="$(sed -n 's|.*denoVersion = "\([^"]*\)".*|\1|p' flake.nix | head -n1)"
+current_version="$(jq -r '.version' assets.json)"
 
 asset_hash() {
   local asset_name="$1"
@@ -32,13 +32,15 @@ x64_hash="$(asset_hash deno-x86_64-unknown-linux-gnu.zip)"
 linux_arm64_hash="$(asset_hash deno-aarch64-unknown-linux-gnu.zip)"
 darwin_arm64_hash="$(asset_hash deno-aarch64-apple-darwin.zip)"
 
-NEW_VERSION="$latest_version" X64_HASH="$x64_hash" LINUX_ARM64_HASH="$linux_arm64_hash" DARWIN_ARM64_HASH="$darwin_arm64_hash" perl -0pi -e '
-  my $new_version = $ENV{NEW_VERSION};
-  my $x64_hash = $ENV{X64_HASH};
-  my $linux_arm64_hash = $ENV{LINUX_ARM64_HASH};
-  my $darwin_arm64_hash = $ENV{DARWIN_ARM64_HASH};
-  s/denoVersion = "[^"]*"/denoVersion = "$new_version"/;
-  s/(x86_64-linux = \{\s+hash = ")[^"]*(";)/$1$x64_hash$2/s;
-  s/(aarch64-linux = \{\s+hash = ")[^"]*(";)/$1$linux_arm64_hash$2/s;
-  s/(aarch64-darwin = \{\s+hash = ")[^"]*(";)/$1$darwin_arm64_hash$2/s;
-' flake.nix
+jq \
+  --arg version "$latest_version" \
+  --arg x64_hash "$x64_hash" \
+  --arg linux_arm64_hash "$linux_arm64_hash" \
+  --arg darwin_arm64_hash "$darwin_arm64_hash" \
+  '.version = $version
+  | .assets["x86_64-linux"].hash = $x64_hash
+  | .assets["aarch64-linux"].hash = $linux_arm64_hash
+  | .assets["aarch64-darwin"].hash = $darwin_arm64_hash' \
+  assets.json > assets.json.tmp
+
+mv assets.json.tmp assets.json

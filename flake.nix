@@ -8,20 +8,8 @@
   outputs =
     { nixpkgs, ... }:
     let
-      assets = {
-        x86_64-linux = {
-          hash = "0mp2fj07vyac1psgzhfrfwib7vzszpjy44rcg1xl4hqsh3x2rb38";
-          name = "deno-x86_64-unknown-linux-gnu.zip";
-        };
-        aarch64-linux = {
-          hash = "14iwhaq3idhaidf47zxg012fgbl8s6fd97bk613zylg2a3bxggmy";
-          name = "deno-aarch64-unknown-linux-gnu.zip";
-        };
-        aarch64-darwin = {
-          hash = "0y5d1im0wn8fxmyqif170yqrrprlv0wh0ncb562353jn2dwvj7iz";
-          name = "deno-aarch64-apple-darwin.zip";
-        };
-      };
+      metadata = builtins.fromJSON (builtins.readFile ./assets.json);
+      assets = metadata.assets;
       forAllSystems =
         systems: f:
         builtins.listToAttrs (
@@ -30,7 +18,7 @@
             value = f system;
           }) systems
         );
-      denoVersion = "2.8.2";
+      denoVersion = metadata.version;
     in
     {
       packages = forAllSystems (builtins.attrNames assets) (

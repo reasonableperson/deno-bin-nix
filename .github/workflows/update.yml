@@ -22,17 +22,17 @@ jobs:
         run: |
           set -euo pipefail
 
-          current_version="$(sed -n 's|.*denoVersion = "\([^"]*\)".*|\1|p' flake.nix | head -n1)"
+          current_version="$(jq -r '.version' assets.json)"
           ./update.sh
-          latest_version="$(sed -n 's|.*denoVersion = "\([^"]*\)".*|\1|p' flake.nix | head -n1)"
+          latest_version="$(jq -r '.version' assets.json)"
 
-          if git diff --quiet -- flake.nix; then
+          if git diff --quiet -- assets.json; then
             echo "no changes to commit"
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add flake.nix
+          git add assets.json
           git commit -m "update: Deno ${current_version} -> ${latest_version}"
           git push
