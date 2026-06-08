@@ -11,7 +11,10 @@ Add the flake as an input:
 
 ```nix
 {
-  inputs.deno-bin.url = "github:reasonableperson/deno-bin";
+  inputs.deno-bin = {
+    url = "github:reasonableperson/deno-bin";
+    inputs.nixpkgs.follows = "nixpkgs";
+  };
 }
 ```
 
