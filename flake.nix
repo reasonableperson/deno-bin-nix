@@ -1,5 +1,5 @@
 {
-  description = "Pinned Deno binary flake for Linux and aarch64-darwin";
+  description = "Nix flake for latest Deno binaries";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
