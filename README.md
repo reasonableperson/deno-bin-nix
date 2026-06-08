@@ -24,11 +24,11 @@ Then add it to a NixOS configuration:
 {
   outputs = { self, nixpkgs, deno-bin, ... }: {
     nixosConfigurations.my-host = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
+      system = builtins.currentSystem;
       modules = [
         ({ pkgs, ... }: {
           environment.systemPackages = [
-            deno-bin.packages.x86_64-linux.default
+            deno-bin.packages.${pkgs.stdenv.hostPlatform.system}.default
           ];
         })
       ];
@@ -44,14 +44,14 @@ Or add it to a Home Manager configuration:
   outputs = { self, nixpkgs, home-manager, deno-bin, ... }: {
     homeConfigurations.me = home-manager.lib.homeManagerConfiguration {
       pkgs = import nixpkgs {
-        system = "x86_64-linux";
+        system = builtins.currentSystem;
       };
       modules = [
-        {
+        ({ pkgs, ... }: {
           home.packages = [
-            deno-bin.packages.x86_64-linux.default
+            deno-bin.packages.${pkgs.stdenv.hostPlatform.system}.default
           ];
-        }
+        })
       ];
     };
   };
@@ -64,7 +64,7 @@ Or use the overlay in either place:
 {
   outputs = { self, nixpkgs, deno-bin, ... }: {
     nixosConfigurations.my-host = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
+      system = builtins.currentSystem;
       modules = [
         ({ pkgs, ... }: {
           nixpkgs.overlays = [ deno-bin.overlays.default ];
