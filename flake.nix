@@ -26,10 +26,7 @@
             stdenvNoCC.mkDerivation {
               pname = "deno";
               version = version;
-              src = fetchurl {
-                url = assets.${system}.url;
-                sha256 = assets.${system}.hash;
-              };
+              src = fetchurl assets.${system};
               nativeBuildInputs = [ unzip ] ++ lib.optionals stdenv.hostPlatform.isLinux [ autoPatchelfHook ];
               buildInputs = lib.optionals stdenv.hostPlatform.isLinux [
                 glibc

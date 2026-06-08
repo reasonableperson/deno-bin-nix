@@ -15,7 +15,7 @@ parse_asset() {
   cat <<EOF
 {
   "url": "$(jq -r '.browser_download_url' <<< "$asset_json")",
-  "hash": "$(jq -r '.digest | sub("^sha256:"; "")' <<< "$asset_json")"
+  "sha256": "$(jq -r '.digest | sub("^sha256:"; "")' <<< "$asset_json")"
 }
 EOF
 }
