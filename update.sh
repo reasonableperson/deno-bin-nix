@@ -21,6 +21,19 @@ asset_hash() {
   nix hash convert --from hex --to nix32 "${digest#sha256:}"
 }
 
+asset_url() {
+  local asset_name="$1"
+  local url
+  url="$(jq -r --arg name "$asset_name" '.assets[] | select(.name == $name) | .browser_download_url' <<< "$release_json")"
+
+  if [[ -z "$url" || "$url" == "null" ]]; then
+    echo "missing url for ${asset_name}" >&2
+    exit 1
+  fi
+
+  printf '%s\n' "$url"
+}
+
 if [[ "$latest_version" == "$current_version" ]]; then
   echo "deno-bin is already up to date at ${current_version}"
   exit 0
@@ -33,16 +46,16 @@ cat > metadata.json.tmp <<EOF
   "version": "${latest_version}",
   "assets": {
     "x86_64-linux": {
-      "hash": "$(asset_hash deno-x86_64-unknown-linux-gnu.zip)",
-      "name": "deno-x86_64-unknown-linux-gnu.zip"
+      "url": "$(asset_url deno-x86_64-unknown-linux-gnu.zip)",
+      "hash": "$(asset_hash deno-x86_64-unknown-linux-gnu.zip)"
     },
     "aarch64-linux": {
-      "hash": "$(asset_hash deno-aarch64-unknown-linux-gnu.zip)",
-      "name": "deno-aarch64-unknown-linux-gnu.zip"
+      "url": "$(asset_url deno-aarch64-unknown-linux-gnu.zip)",
+      "hash": "$(asset_hash deno-aarch64-unknown-linux-gnu.zip)"
     },
     "aarch64-darwin": {
-      "hash": "$(asset_hash deno-aarch64-apple-darwin.zip)",
-      "name": "deno-aarch64-apple-darwin.zip"
+      "url": "$(asset_url deno-aarch64-apple-darwin.zip)",
+      "hash": "$(asset_hash deno-aarch64-apple-darwin.zip)"
     }
   }
 }

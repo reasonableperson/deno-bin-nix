@@ -27,7 +27,7 @@
               pname = "deno";
               version = version;
               src = fetchzip {
-                url = "https://github.com/denoland/deno/releases/download/v${version}/${assets.${system}.name}";
+                url = assets.${system}.url;
                 hash = assets.${system}.hash;
               };
               nativeBuildInputs = lib.optionals stdenv.hostPlatform.isLinux [ autoPatchelfHook ];

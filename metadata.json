@@ -2,16 +2,16 @@
   "version": "2.8.2",
   "assets": {
     "x86_64-linux": {
-      "hash": "0mp2fj07vyac1psgzhfrfwib7vzszpjy44rcg1xl4hqsh3x2rb38",
-      "name": "deno-x86_64-unknown-linux-gnu.zip"
+      "url": "https://github.com/denoland/deno/releases/download/v2.8.2/deno-x86_64-unknown-linux-gnu.zip",
+      "hash": "0mp2fj07vyac1psgzhfrfwib7vzszpjy44rcg1xl4hqsh3x2rb38"
     },
     "aarch64-linux": {
-      "hash": "14iwhaq3idhaidf47zxg012fgbl8s6fd97bk613zylg2a3bxggmy",
-      "name": "deno-aarch64-unknown-linux-gnu.zip"
+      "url": "https://github.com/denoland/deno/releases/download/v2.8.2/deno-aarch64-unknown-linux-gnu.zip",
+      "hash": "14iwhaq3idhaidf47zxg012fgbl8s6fd97bk613zylg2a3bxggmy"
     },
     "aarch64-darwin": {
-      "hash": "0y5d1im0wn8fxmyqif170yqrrprlv0wh0ncb562353jn2dwvj7iz",
-      "name": "deno-aarch64-apple-darwin.zip"
+      "url": "https://github.com/denoland/deno/releases/download/v2.8.2/deno-aarch64-apple-darwin.zip",
+      "hash": "0y5d1im0wn8fxmyqif170yqrrprlv0wh0ncb562353jn2dwvj7iz"
     }
   }
 }
