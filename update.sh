@@ -14,9 +14,8 @@ parse_asset() {
 
   local digest="$(jq -r '.digest' <<< "$asset_json")"
   local url="$(jq -r '.browser_download_url' <<< "$asset_json")"
-  local hash="$(nix hash convert --from hex --to nix32 "${digest#sha256:}")"
 
-  printf '{\n  "url": "%s",\n  "hash": "%s"\n}\n' "$url" "$hash"
+  printf '{\n  "url": "%s",\n  "hash": "%s"\n}\n' "$url" "${digest#sha256:}"
 }
 
 if [[ "$latest_version" == "$current_version" ]]; then

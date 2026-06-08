@@ -26,17 +26,19 @@
             stdenvNoCC.mkDerivation {
               pname = "deno";
               version = version;
-              src = fetchzip {
+              src = fetchurl {
                 url = assets.${system}.url;
-                hash = assets.${system}.hash;
+                sha256 = assets.${system}.hash;
               };
-              nativeBuildInputs = lib.optionals stdenv.hostPlatform.isLinux [ autoPatchelfHook ];
+              nativeBuildInputs = [ unzip ] ++ lib.optionals stdenv.hostPlatform.isLinux [ autoPatchelfHook ];
               buildInputs = lib.optionals stdenv.hostPlatform.isLinux [
                 glibc
                 stdenv.cc.cc.lib
               ];
+              dontUnpack = true;
               installPhase = ''
                 mkdir -p $out/bin
+                unzip "$src" deno
                 mv deno $out/bin/deno
                 chmod +x $out/bin/deno
               '';
