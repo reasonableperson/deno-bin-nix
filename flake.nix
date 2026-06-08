@@ -8,21 +8,21 @@
   outputs =
     { nixpkgs, ... }:
     let
-      denoSystems = {
+      assets = {
         x86_64-linux = {
           hash = "0mp2fj07vyac1psgzhfrfwib7vzszpjy44rcg1xl4hqsh3x2rb38";
-          assetName = "deno-x86_64-unknown-linux-gnu.zip";
+          name = "deno-x86_64-unknown-linux-gnu.zip";
         };
         aarch64-linux = {
           hash = "14iwhaq3idhaidf47zxg012fgbl8s6fd97bk613zylg2a3bxggmy";
-          assetName = "deno-aarch64-unknown-linux-gnu.zip";
+          name = "deno-aarch64-unknown-linux-gnu.zip";
         };
         aarch64-darwin = {
           hash = "0y5d1im0wn8fxmyqif170yqrrprlv0wh0ncb562353jn2dwvj7iz";
-          assetName = "deno-aarch64-apple-darwin.zip";
+          name = "deno-aarch64-apple-darwin.zip";
         };
       };
-      systems = builtins.attrNames denoSystems;
+      systems = builtins.attrNames assets;
       forAllSystems =
         f:
         builtins.listToAttrs (
@@ -43,10 +43,10 @@
         system:
         let
           pkgs = mkPkgs system;
-          denoSystem = denoSystems.${system};
+          asset = assets.${system};
           denoSrc = pkgs.fetchzip {
-            url = "https://github.com/denoland/deno/releases/download/v${denoVersion}/${denoSystem.assetName}";
-            hash = denoSystem.hash;
+            url = "https://github.com/denoland/deno/releases/download/v${denoVersion}/${asset.name}";
+            hash = asset.hash;
           };
           deno = pkgs.stdenvNoCC.mkDerivation {
             pname = "deno";
