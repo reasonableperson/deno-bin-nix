@@ -15,29 +15,60 @@ Add the flake as an input:
 }
 ```
 
-Then consume its package:
+Then add it to a NixOS configuration:
 
 ```nix
 {
   outputs = { self, nixpkgs, deno-bin, ... }: {
-    packages.x86_64-linux.default = deno-bin.packages.x86_64-linux.default;
+    nixosConfigurations.my-host = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ({ pkgs, ... }: {
+          environment.systemPackages = [
+            deno-bin.packages.x86_64-linux.default
+          ];
+        })
+      ];
+    };
   };
 }
 ```
 
-Or use the overlay:
+Or add it to a Home Manager configuration:
+
+```nix
+{
+  outputs = { self, nixpkgs, home-manager, deno-bin, ... }: {
+    homeConfigurations.me = home-manager.lib.homeManagerConfiguration {
+      pkgs = import nixpkgs {
+        system = "x86_64-linux";
+      };
+      modules = [
+        {
+          home.packages = [
+            deno-bin.packages.x86_64-linux.default
+          ];
+        }
+      ];
+    };
+  };
+}
+```
+
+Or use the overlay in either place:
 
 ```nix
 {
   outputs = { self, nixpkgs, deno-bin, ... }: {
-    packages.x86_64-linux.default =
-      let
-        pkgs = import nixpkgs {
-          system = "x86_64-linux";
-          overlays = [ deno-bin.overlays.default ];
-        };
-      in
-      pkgs.deno;
+    nixosConfigurations.my-host = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ({ pkgs, ... }: {
+          nixpkgs.overlays = [ deno-bin.overlays.default ];
+          environment.systemPackages = [ pkgs.deno ];
+        })
+      ];
+    };
   };
 }
 ```
