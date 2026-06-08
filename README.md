@@ -32,7 +32,7 @@ Or use the overlay:
 
 ```nix
 ({ pkgs, inputs, ... }: {
-  inputs.nixpkgs.overlays = [ inputs.deno-bin.overlays.default ];
+  nixpkgs.overlays = [ inputs.deno-bin.overlays.default ];
   environment.systemPackages = [ pkgs.deno ];
 })
 ```
