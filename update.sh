@@ -12,10 +12,12 @@ parse_asset() {
   local asset_name="$1"
   local asset_json="$(jq -c --arg name "$asset_name" '.assets[] | select(.name == $name)' <<< "$release_json")"
 
-  local digest="$(jq -r '.digest' <<< "$asset_json")"
-  local url="$(jq -r '.browser_download_url' <<< "$asset_json")"
-
-  printf '{\n  "url": "%s",\n  "hash": "%s"\n}\n' "$url" "${digest#sha256:}"
+  cat <<EOF
+{
+  "url": "$(jq -r '.browser_download_url' <<< "$asset_json")",
+  "hash": "$(jq -r '.digest | sub("^sha256:"; "")' <<< "$asset_json")"
+}
+EOF
 }
 
 if [[ "$latest_version" == "$current_version" ]]; then
