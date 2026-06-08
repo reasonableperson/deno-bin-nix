@@ -37,7 +37,7 @@
               ];
               installPhase = ''
                 mkdir -p $out/bin
-                cp "$src/deno" $out/bin/deno
+                mv deno $out/bin/deno
                 chmod +x $out/bin/deno
               '';
             };
