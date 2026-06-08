@@ -26,7 +26,7 @@ NEW_VERSION="$latest_version" X64_HASH="$x64_hash" LINUX_ARM64_HASH="$linux_arm6
   my $linux_arm64_hash = $ENV{LINUX_ARM64_HASH};
   my $darwin_arm64_hash = $ENV{DARWIN_ARM64_HASH};
   s/denoVersion = "[^"]*"/denoVersion = "$new_version"/;
-  s/denoX64Hash = "[^"]*"/denoX64Hash = "$x64_hash"/;
-  s/denoLinuxArm64Hash = "[^"]*"/denoLinuxArm64Hash = "$linux_arm64_hash"/;
-  s/denoDarwinArm64Hash = "[^"]*"/denoDarwinArm64Hash = "$darwin_arm64_hash"/;
+  s/x86_64-linux = "[^"]*"/x86_64-linux = "$x64_hash"/;
+  s/aarch64-linux = "[^"]*"/aarch64-linux = "$linux_arm64_hash"/;
+  s/aarch64-darwin = "[^"]*"/aarch64-darwin = "$darwin_arm64_hash"/;
 ' flake.nix

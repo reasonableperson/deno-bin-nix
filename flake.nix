@@ -8,11 +8,12 @@
   outputs =
     { nixpkgs, ... }:
     let
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-        "aarch64-darwin"
-      ];
+      denoHashes = {
+        x86_64-linux = "0mp2fj07vyac1psgzhfrfwib7vzszpjy44rcg1xl4hqsh3x2rb38";
+        aarch64-linux = "14iwhaq3idhaidf47zxg012fgbl8s6fd97bk613zylg2a3bxggmy";
+        aarch64-darwin = "0y5d1im0wn8fxmyqif170yqrrprlv0wh0ncb562353jn2dwvj7iz";
+      };
+      systems = builtins.attrNames denoHashes;
       forAllSystems =
         f:
         builtins.listToAttrs (
@@ -27,9 +28,6 @@
           inherit system;
         };
       denoVersion = "2.8.2";
-      denoX64Hash = "0mp2fj07vyac1psgzhfrfwib7vzszpjy44rcg1xl4hqsh3x2rb38";
-      denoLinuxArm64Hash = "14iwhaq3idhaidf47zxg012fgbl8s6fd97bk613zylg2a3bxggmy";
-      denoDarwinArm64Hash = "0y5d1im0wn8fxmyqif170yqrrprlv0wh0ncb562353jn2dwvj7iz";
     in
     {
       packages = forAllSystems (
@@ -43,13 +41,7 @@
               aarch64-darwin = "deno-aarch64-apple-darwin.zip";
             }
             .${system};
-          denoHash =
-            {
-              x86_64-linux = denoX64Hash;
-              aarch64-linux = denoLinuxArm64Hash;
-              aarch64-darwin = denoDarwinArm64Hash;
-            }
-            .${system};
+          denoHash = denoHashes.${system};
           denoSrc = pkgs.fetchzip {
             url = "https://github.com/denoland/deno/releases/download/v${denoVersion}/${denoAssetName}";
             hash = denoHash;
