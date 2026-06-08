@@ -30,31 +30,22 @@
             value = f system;
           }) systems
         );
-      mkPkgs =
-        system:
-        import nixpkgs {
-          inherit system;
-        };
       denoVersion = "2.8.2";
     in
     {
       packages = forAllSystems (builtins.attrNames assets) (
-        system:
-        let
-          pkgs = mkPkgs system;
-          asset = assets.${system};
-          denoSrc = pkgs.fetchzip {
-            url = "https://github.com/denoland/deno/releases/download/v${denoVersion}/${asset.name}";
-            hash = asset.hash;
-          };
-          deno = pkgs.stdenvNoCC.mkDerivation {
+        system: with import nixpkgs { inherit system; }; rec {
+          deno = stdenvNoCC.mkDerivation {
             pname = "deno";
             version = denoVersion;
-            src = denoSrc;
-            nativeBuildInputs = pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [ pkgs.autoPatchelfHook ];
-            buildInputs = pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [
-              pkgs.glibc
-              pkgs.stdenv.cc.cc.lib
+            src = fetchzip {
+              url = "https://github.com/denoland/deno/releases/download/v${denoVersion}/${assets.${system}.name}";
+              hash = assets.${system}.hash;
+            };
+            nativeBuildInputs = lib.optionals stdenv.hostPlatform.isLinux [ autoPatchelfHook ];
+            buildInputs = lib.optionals stdenv.hostPlatform.isLinux [
+              glibc
+              stdenv.cc.cc.lib
             ];
             installPhase = ''
               mkdir -p $out/bin
@@ -62,9 +53,6 @@
               chmod +x $out/bin/deno
             '';
           };
-        in
-        {
-          inherit deno;
           default = deno;
         }
       );
