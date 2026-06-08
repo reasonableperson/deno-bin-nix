@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 release_json="$(curl -fsSL https://api.github.com/repos/denoland/deno/releases/latest)"
 latest_tag="$(jq -r '.tag_name' <<< "$release_json")"
 latest_version="${latest_tag#v}"
-current_version="$(jq -r '.version' metadata.json)"
+current_version="$(jq -r '.version' release.json)"
 
 parse_asset() {
   local asset_name="$1"
@@ -25,7 +25,7 @@ fi
 
 echo "syncing Deno version ${current_version} -> ${latest_version}"
 
-cat > metadata.json.tmp <<EOF
+cat > release.json.tmp <<EOF
 {
   "version": "${latest_version}",
   "assets": {
@@ -36,4 +36,4 @@ cat > metadata.json.tmp <<EOF
 }
 EOF
 
-mv metadata.json.tmp metadata.json
+mv release.json.tmp release.json
