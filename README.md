@@ -18,60 +18,21 @@ Add the flake as an input:
 }
 ```
 
-Then add it to a NixOS configuration:
+Then add it to your NixOS (or Home Manager or nix-darwin) configuration:
 
 ```nix
-{
-  outputs = { self, nixpkgs, deno-bin, ... }: {
-    nixosConfigurations.my-host = nixpkgs.lib.nixosSystem {
-      system = builtins.currentSystem;
-      modules = [
-        ({ pkgs, ... }: {
-          environment.systemPackages = [
-            deno-bin.packages.${pkgs.stdenv.hostPlatform.system}.default
-          ];
-        })
-      ];
-    };
-  };
-}
+({ pkgs, inputs, ... }: {
+  environment.systemPackages = [
+    inputs.deno-bin.packages.${pkgs.stdenv.hostPlatform.system}.default
+  ];
+})
 ```
 
-Or add it to a Home Manager configuration:
+Or use the overlay:
 
 ```nix
-{
-  outputs = { self, nixpkgs, home-manager, deno-bin, ... }: {
-    homeConfigurations.me = home-manager.lib.homeManagerConfiguration {
-      pkgs = import nixpkgs {
-        system = builtins.currentSystem;
-      };
-      modules = [
-        ({ pkgs, ... }: {
-          home.packages = [
-            deno-bin.packages.${pkgs.stdenv.hostPlatform.system}.default
-          ];
-        })
-      ];
-    };
-  };
-}
-```
-
-Or use the overlay in either place:
-
-```nix
-{
-  outputs = { self, nixpkgs, deno-bin, ... }: {
-    nixosConfigurations.my-host = nixpkgs.lib.nixosSystem {
-      system = builtins.currentSystem;
-      modules = [
-        ({ pkgs, ... }: {
-          nixpkgs.overlays = [ deno-bin.overlays.default ];
-          environment.systemPackages = [ pkgs.deno ];
-        })
-      ];
-    };
-  };
-}
+({ pkgs, inputs, ... }: {
+  inputs.nixpkgs.overlays = [ inputs.deno-bin.overlays.default ];
+  environment.systemPackages = [ pkgs.deno ];
+})
 ```
