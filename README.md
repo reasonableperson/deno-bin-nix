@@ -24,3 +24,20 @@ Then consume its package:
   };
 }
 ```
+
+Or use the overlay:
+
+```nix
+{
+  outputs = { self, nixpkgs, deno-bin, ... }: {
+    packages.x86_64-linux.default =
+      let
+        pkgs = import nixpkgs {
+          system = "x86_64-linux";
+          overlays = [ deno-bin.overlays.default ];
+        };
+      in
+      pkgs.deno;
+  };
+}
+```

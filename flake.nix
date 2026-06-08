@@ -6,7 +6,7 @@
   };
 
   outputs =
-    { nixpkgs, ... }:
+    inputs@{ self, nixpkgs, ... }:
     let
       metadata = builtins.fromJSON (builtins.readFile ./release.json);
       forAllSystems =
@@ -42,5 +42,8 @@
             };
         }
       );
+      overlays.default = final: prev: {
+        deno = self.packages.${final.stdenv.hostPlatform.system}.default;
+      };
     };
 }
