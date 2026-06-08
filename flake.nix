@@ -6,7 +6,7 @@
   };
 
   outputs =
-    inputs@{ self, nixpkgs, ... }:
+    { self, nixpkgs, ... }:
     let
       metadata = builtins.fromJSON (builtins.readFile ./release.json);
       forAllSystems =
