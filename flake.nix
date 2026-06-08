@@ -9,7 +9,6 @@
     { nixpkgs, ... }:
     let
       metadata = builtins.fromJSON (builtins.readFile ./metadata.json);
-      assets = metadata.assets;
       forAllSystems =
         systems: f:
         builtins.listToAttrs (
@@ -18,17 +17,16 @@
             value = f system;
           }) systems
         );
-      denoVersion = metadata.version;
     in
     {
-      packages = forAllSystems (builtins.attrNames assets) (
+      packages = forAllSystems (builtins.attrNames metadata.assets) (
         system: with import nixpkgs { inherit system; }; {
           default = stdenvNoCC.mkDerivation {
             pname = "deno";
-            version = denoVersion;
+            version = metadata.version;
             src = fetchzip {
-              url = "https://github.com/denoland/deno/releases/download/v${denoVersion}/${assets.${system}.name}";
-              hash = assets.${system}.hash;
+              url = "https://github.com/denoland/deno/releases/download/v${metadata.version}/${metadata.assets.${system}.name}";
+              hash = metadata.assets.${system}.hash;
             };
             nativeBuildInputs = lib.optionals stdenv.hostPlatform.isLinux [ autoPatchelfHook ];
             buildInputs = lib.optionals stdenv.hostPlatform.isLinux [
