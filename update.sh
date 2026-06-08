@@ -10,14 +10,12 @@ current_version="$(jq -r '.version' release.json)"
 
 parse_asset() {
   jq -r --arg name "$1" '
-    first(
-      .assets[]
-      | select(.name == $name)
-      | {
-          url: .browser_download_url,
-          sha256: (.digest | sub("^sha256:"; ""))
-        }
-    ) // error("missing asset: \($name)")
+    .assets[]
+    | select(.name == $name)
+    | {
+        url: .browser_download_url,
+        sha256: (.digest | sub("^sha256:"; ""))
+      }
   ' <<< "$release_json"
 }
 
@@ -28,7 +26,7 @@ fi
 
 echo "syncing Deno version ${current_version} -> ${latest_version}"
 
-cat > release.json.tmp <<EOF
+cat > release.json <<EOF
 {
   "version": "${latest_version}",
   "assets": {
@@ -38,5 +36,3 @@ cat > release.json.tmp <<EOF
   }
 }
 EOF
-
-mv release.json.tmp release.json
