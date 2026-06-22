@@ -39,6 +39,7 @@
                 mv deno $out/bin/deno
                 chmod +x $out/bin/deno
               '';
+              meta.mainProgram = "deno";
             };
         }
       );
