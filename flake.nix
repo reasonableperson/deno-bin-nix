@@ -44,7 +44,7 @@
         }
       );
       overlays.default = final: prev: {
-        deno = self.packages.${final.stdenv.hostPlatform.system}.default;
+        deno = self.packages.${prev.stdenv.hostPlatform.system}.default;
       };
     };
 }
